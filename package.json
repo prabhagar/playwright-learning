@@ -1,0 +1,31 @@
+{
+  "name": "playwright-learning",
+  "version": "1.0.0",
+  "description": "Comprehensive Playwright automation testing learning journey",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "test:chrome": "playwright test --project=chromium",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:mobile": "playwright test --project='Mobile Chrome'",
+    "test:headed:debug": "playwright test --headed --debug",
+    "serve": "node server.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": ["playwright", "automation", "testing", "e2e"],
+  "author": "Playwright Learner",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.50.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
