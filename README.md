@@ -1,4 +1,4 @@
-# 🎭 Playwright Learning Lab
+# 🎭 Playwright Testing
 
 A comprehensive, hands-on learning platform for mastering Playwright automation testing, from beginner to advanced level.
 
@@ -40,7 +40,7 @@ A comprehensive, hands-on learning platform for mastering Playwright automation 
 ## 📁 Project Structure
 
 ```
-playwright-learning/
+playwright-testing/
 ├── website/                          # Sample website for testing
 │   └── index.html                   # Feature-rich demo application
 ├── tests/
