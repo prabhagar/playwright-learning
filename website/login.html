@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login - Playwright Demo</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#f4f6fb;display:flex;align-items:center;justify-content:center;height:100vh}
+    .card{background:#fff;padding:24px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08);width:320px}
+    .field{margin-bottom:12px}
+    label{display:block;margin-bottom:6px;font-size:14px;color:#333}
+    input{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px}
+    button{width:100%;padding:10px;border:none;border-radius:4px;background:#667eea;color:#fff;font-weight:600}
+    #logout{display:none;margin-top:12px;padding:8px;border-radius:4px;border:1px solid #ddd;background:#fff}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 style="margin:0 0 12px 0;color:#333">Sign in</h2>
+    <div id="loginForm">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" />
+      </div>
+      <button id="loginBtn">Login</button>
+    </div>
+
+    <div id="loggedIn" style="display:none">
+      <p style="color:#333">You are signed in as <strong id="who">user</strong>.</p>
+      <button id="logout">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logout');
+    const loginForm = document.getElementById('loginForm');
+    const loggedIn = document.getElementById('loggedIn');
+    const who = document.getElementById('who');
+
+    function showLoggedIn(username){
+      who.textContent = username;
+      loginForm.style.display = 'none';
+      loggedIn.style.display = 'block';
+      logoutBtn.style.display = 'inline-block';
+        // ensure logout button exists and uses localStorage for persistence
+        const existing = document.getElementById('logout');
+        if(!existing){
+          const b = document.createElement('button');
+          b.id = 'logout';
+          b.textContent = 'Logout';
+          b.style.marginTop = '12px';
+          b.addEventListener('click', ()=>{ localStorage.removeItem('loggedInUser'); loggedIn.style.display='none'; loginForm.style.display='block'; });
+          loggedIn.appendChild(b);
+        }
+    }
+
+    loginBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const u = document.getElementById('username').value;
+      const p = document.getElementById('password').value;
+      // simple mock: accept admin/password
+      if(u === 'admin' && p === 'password'){
+        localStorage.setItem('loggedInUser', u);
+        showLoggedIn(u);
+      } else {
+        alert('Invalid credentials — use admin / password');
+      }
+    });
+
+    // restore state on load
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const u = localStorage.getItem('loggedInUser');
+      if(u){ showLoggedIn(u); }
+    });
+  </script>
+</body>
+</html>

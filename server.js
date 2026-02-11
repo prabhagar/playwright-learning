@@ -13,6 +13,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'website', 'index.html'));
 });
 
+// Serve login page
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'website', 'login.html'));
+});
+
 // Mock API endpoints
 app.get('/api/users', (req, res) => {
     res.json([
@@ -66,6 +71,11 @@ app.delete('/api/users/:id', (req, res) => {
 
 // Health check
 app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// API health endpoint (tests expect /api/health)
+app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 

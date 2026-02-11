@@ -489,6 +489,7 @@
         <header>
             <h1>🎭 Playwright Learning Lab</h1>
             <p>Master automation testing step by step</p>
+            <div id="authArea" style="position:absolute;right:20px;top:30px"></div>
         </header>
 
         <nav>
@@ -1072,6 +1073,23 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Page loaded. Ready for testing!');
+            // If a logged-in user was saved in localStorage by the login page,
+            // show a logout button so tests using storageState can detect it.
+            const u = localStorage.getItem('loggedInUser');
+            if (u) {
+                const authArea = document.getElementById('authArea');
+                if (authArea && !document.getElementById('logout')) {
+                    const btn = document.createElement('button');
+                    btn.id = 'logout';
+                    btn.textContent = 'Logout';
+                    btn.style.padding = '8px 12px';
+                    btn.style.borderRadius = '6px';
+                    btn.style.border = '1px solid #ddd';
+                    btn.style.background = '#fff';
+                    btn.addEventListener('click', () => { localStorage.removeItem('loggedInUser'); btn.remove(); });
+                    authArea.appendChild(btn);
+                }
+            }
         });
     </script>
 </body>
