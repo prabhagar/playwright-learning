@@ -72,19 +72,6 @@ function buildHtml({ summary, results }) {
 
   const allSpecs = flattenSpecs(results.suites || []);
 
-  const testRows = tests.length
-    ? tests
-        .map(
-          (t) => `<tr>
-        <td>${t.fullTitle || t.title}</td>
-        <td>${t.project}</td>
-        <td>${t.status}</td>
-        <td>${t.durationMs}</td>
-      </tr>`,
-        )
-        .join('')
-    : '<tr><td colspan="4">No test list data</td></tr>';
-
   const testsBySpec = tests.reduce((acc, test) => {
     const spec = test.file || 'unknown-spec';
     if (!acc[spec]) acc[spec] = [];
@@ -200,14 +187,6 @@ function buildHtml({ summary, results }) {
       </table>
       <p>Total specs in JSON: ${allSpecs.length}</p>
     </div>
-  </div>
-
-  <div class="panel">
-    <h2>Test names run (${tests.length})</h2>
-    <table>
-      <thead><tr><th>Test</th><th>Project</th><th>Status</th><th>Duration ms</th></tr></thead>
-      <tbody>${testRows}</tbody>
-    </table>
   </div>
 
   <div class="panel">
