@@ -12,6 +12,8 @@
     "test:firefox": "playwright test --project=firefox",
     "test:webkit": "playwright test --project=webkit",
     "test:mobile": "playwright test --project='Mobile Chrome'",
+    "test:reporting:enhanced": "playwright test tests/reporting/1-reporters-custom-reporting.spec.js --project=chromium -c playwright.reporting.config.js",
+    "report:dashboard": "node scripts/generate-report-dashboard.js",
     "test:headed:debug": "playwright test --headed --debug",
     "serve": "node server.js",
     "lint": "eslint .",
