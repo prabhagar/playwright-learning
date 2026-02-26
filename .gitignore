@@ -1,7 +1,6 @@
 # Node
 node_modules/
 .npm/
-package-lock.json
 
 # Playwright
 test-results/
