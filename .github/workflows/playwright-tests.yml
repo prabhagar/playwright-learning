@@ -1,0 +1,111 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        # Test across multiple browsers and Node versions
+        node-version: [18.x, 20.x]
+        browser: [chromium, firefox, webkit]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      
+      - name: Run Playwright tests
+        run: npm test -- --project=${{ matrix.browser }}
+        env:
+          CI: true
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.node-version }}-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 30
+      
+      - name: Upload test videos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos-${{ matrix.node-version }}-${{ matrix.browser }}
+          path: test-results/
+          retention-days: 7
+
+  merge-reports:
+    if: always()
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: all-reports
+      
+      - name: Merge reports
+        run: |
+          npx playwright merge-reports --reporter html ./all-reports
+      
+      - name: Upload merged report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report-merged
+          path: playwright-report/
+          retention-days: 30
+
+  test-results:
+    name: Publish Test Results
+    needs: test
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Playwright Test Results
+          path: 'artifacts/**/results.json'
+          reporter: java-junit
