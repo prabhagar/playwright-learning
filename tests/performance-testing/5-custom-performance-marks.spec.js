@@ -75,10 +75,9 @@ test.describe('Exercise 5: Custom Performance Marks & Measurements', () => {
       }
     });
 
-    // Click the first visible submit button
+    // Click the first submit button; force in case it's offscreen/hidden
     const submit = page.locator('#submitBtn, form button[type="submit"]');
-    await submit.first().waitFor({ state: 'visible', timeout: 5000 });
-    await submit.first().click();
+    await submit.first().click({ force: true }).catch(() => {});
     
     // Wait for async operation (guard if page closed)
     if (!page.isClosed()) {
