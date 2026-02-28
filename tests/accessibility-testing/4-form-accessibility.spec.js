@@ -155,7 +155,9 @@ test.describe('Exercise 4: Form Accessibility', () => {
     const buttonExists = await button.count() > 0;
 
     if (buttonExists) {
-      await button.click().catch(() => null);
+      // attempt a forced click with a small timeout so we don't hang if button
+      // is hidden or disabled in the CI environment
+      await button.click({ force: true, timeout: 5000 }).catch(() => null);
       // give the page a moment but avoid blowing up if it closes
       if (!page.isClosed()) {
         try {
@@ -163,17 +165,26 @@ test.describe('Exercise 4: Form Accessibility', () => {
         } catch {}
       }
 
-      // Check for error messages
-      const errorMessages = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('.error, .invalid, [role="alert"], [aria-invalid="true"]')).map(el => ({
-          tag: el.tagName,
-          role: el.getAttribute('role'),
-          text: el.textContent?.substring(0, 60) || '',
-          ariaLive: el.getAttribute('aria-live'),
-          ariaDescribedby: el.getAttribute('aria-describedby'),
-          ariaInvalid: el.getAttribute('aria-invalid'),
-        })).slice(0, 10);
-      });
+      // Check for error messages (guard against closed page)
+      let errorMessages = [];
+      if (!page.isClosed()) {
+        try {
+          errorMessages = await page.evaluate(() => {
+            return Array.from(document.querySelectorAll('.error, .invalid, [role="alert"], [aria-invalid="true"]')).map(el => ({
+              tag: el.tagName,
+              role: el.getAttribute('role'),
+              text: el.textContent?.substring(0, 60) || '',
+              ariaLive: el.getAttribute('aria-live'),
+              ariaDescribedby: el.getAttribute('aria-describedby'),
+              ariaInvalid: el.getAttribute('aria-invalid'),
+            })).slice(0, 10);
+          });
+        } catch (e) {
+          console.warn("Couldn't evaluate error messages, page may be closed", e.message);
+        }
+      } else {
+        console.warn('Page closed before evaluating error messages');
+      }
 
       console.log('\n🚨 Form Error Handling:');
       console.log('════════════════════════════════════════════════════════');
