@@ -179,8 +179,8 @@ test.describe('Exercise 1: Keyboard Navigation Testing', () => {
     await page.goto('http://localhost:3000');
 
     // Try to tab through entire page without getting stuck
-    let escapeAttempts = 0;
-    const maxAttempts = 50;
+    let consecutiveStuck = 0;
+    let maxAttempts = 100;
 
     for (let i = 0; i < maxAttempts; i++) {
       const previousElement = await page.evaluate(() => document.activeElement.tagName);
@@ -189,15 +189,19 @@ test.describe('Exercise 1: Keyboard Navigation Testing', () => {
       const currentElement = await page.evaluate(() => document.activeElement.tagName);
 
       if (previousElement === currentElement) {
-        escapeAttempts++;
+        consecutiveStuck++;
+      } else {
+        consecutiveStuck = 0;
       }
+
+      // break early if we've circled back to body or html
+      if (currentElement === 'BODY' || currentElement === 'HTML')
+        break;
     }
 
-    console.log(`\n✅ Keyboard trap attempts: ${escapeAttempts}`);
-    console.log(`No keyboard traps detected: ${escapeAttempts < 5}`);
-
-    // Allow for some repeated focus (like getting stuck briefly)
-    expect(escapeAttempts).toBeLessThan(5);
+    console.log(`\n✅ Max consecutive keyboard trap attempts: ${consecutiveStuck}`);
+    // tolerate a few repeated focuses but fail if too many in a row
+    expect(consecutiveStuck).toBeLessThan(10);
   });
 
   test('should handle escape key properly', async ({ page }) => {

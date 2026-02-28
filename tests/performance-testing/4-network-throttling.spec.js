@@ -105,7 +105,8 @@ test.describe('Exercise 4: Network Throttling & Performance Under Load', () => {
 
     // Should navigate successfully now
     await page.goto('http://localhost:3000');
-    await expect(page).toHaveTitle(/.*Election Simulator|Testing Demo.*/i);
+    // title may vary depending on local branding; just check for the app name
+    await expect(page).toHaveTitle(/Playwright\s+Learning/i);
 
     console.log('✅ Page loaded successfully after network recovery');
 

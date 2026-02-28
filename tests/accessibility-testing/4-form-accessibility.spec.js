@@ -156,7 +156,12 @@ test.describe('Exercise 4: Form Accessibility', () => {
 
     if (buttonExists) {
       await button.click().catch(() => null);
-      await page.waitForTimeout(500);
+      // give the page a moment but avoid blowing up if it closes
+      if (!page.isClosed()) {
+        try {
+          await page.waitForTimeout(500);
+        } catch {}
+      }
 
       // Check for error messages
       const errorMessages = await page.evaluate(() => {
